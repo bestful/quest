@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+<link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.0/mapsjs-ui.css?dp-version=1549984893" />
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
+<script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-core.js"></script>
+<script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-service.js"></script>
+<script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
+<script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+<script>// функция изменения температуры
+        function DecreaseTemperature(initTemp, i){
+            return initTemp * 0.1 / i;
+        }
+        
+        // функция определения вероятности перехода в неоптимальное состояние
+        function GetTransitionProbability(dE, T){
+            return Math.exp(-dE / T);
+        }
+        
+        // функция решающая будет ли совершен переход в новое состояние
+        function is_Trnsaction(prob){
+            if (prob > 1 || prob < 0){
+                print("error!!!!!!!!!!!!!!!!!");
+                exit();
+            }
+            let value = Math.random();
+            if (value <= prob){
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+        
+        // А - координаты i-й точки    В - координаты i+1 точки;  обычное Эвклидово расстояние;
+        function Metric(A, B){
+            //console.log(`A= ${A},  B=${B}`);
+            return ((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2) ** 0.5;
+        }
+        
+        // points - массив координат, считаем энергию для данного состояния(т.е. общее растояние)
+        function CalculateEnergy(points){
+            let n = points.length;
+            let E = 0;
+            for (let i = 0; i < n-1; i++){
+                E += Metric(points[i], points[i+1]);
+            }
+            // возврат к начальной точке, работает только в полносвязных графах
+            E += Metric(points[n-1], points[0]);
+            return E;
+        }
+        
+        // создание нового сосояния, на основе points; выбирается случайный промежуток в массиве и реверсируется
+        function GenerateStateCandidate(points){
+            let i = Math.floor(Math.random() * (points.length+1 - 0)) + 0;
+            let j = Math.floor(Math.random() * (points.length+1 - 0)) + 0;
+        
+            if (i > j){
+                let t = i;
+                i = j;
+                j = t;
+            }
+        
+            let a = points.slice(0, i);
+            let b = points.slice(i, j);
+        
+            b = b.reverse();
+        
+            let c = points.slice(j, points.length)
+            let res = a.concat(b, c);
+            return res;
+        }
+        
+        // найти путь по номерам координат из points, возвращает список последовательно идущих номеров
+        function find_path(points){
+            let path = [];
+            for (let i=0; i<points.length; i++){
+                path.push(points[i][2]);
+            }
+        
+            return path;
+        }
+        
+        // начальные значения
+        // 
+        //     startT - температура с которой начинаем
+        //     endT - температура, достигнув которой закончим цикл
+        //
+        function run_an(points, startT=10, endT= 0.0001){
+            let from_x = 0;
+            let finish_x = 80;
+            let from_y = 0;
+            let finish_y = 80;
+        
+            // отобразим точки и случайный маршут(здесь всегда берется от 0 до n-1)
+            // state - последовательность номеров точек
+            let state = find_path(points);
+            console.log(`state: ${state}`);
+        
+            // подсчет энергии для данного состояния
+            let currentEnergy = CalculateEnergy(points);
+            
+            // задаем начальное значение Т
+            let T = startT;
+            // переменные для "ловли" лучшего маршута
+            let BestPath = state;
+            let BestEnergy = currentEnergy;
+        
+            // введем ограничение по итерациям
+            for (let i=0; i<1000; i++){
+                // создаем состояние-кандидат
+                let stateCandidate = GenerateStateCandidate(points);
+                // находим энергию(длину пути) состояния кандидата
+                let candidateEnergy = CalculateEnergy(stateCandidate);
+        
+                // если состояние кандидат имеет лучшую энергию(длину пути), то переходим в это состояние, если нет то переход будет осуществлен с вероятностью p
+                if (candidateEnergy < currentEnergy){
+                    currentEnergy = candidateEnergy;
+                    points = stateCandidate.slice();
+                    state = find_path(points);
+                }
+                else{
+                    // подсчет вероятности р с которой будет совершен переход
+                    let p = GetTransitionProbability(candidateEnergy - currentEnergy, T)
+                    if (is_Trnsaction(p)){
+                        currentEnergy = candidateEnergy;
+                    points = stateCandidate.slice();
+                    state = find_path(points);
+                    }
+                }
+                // "ловля" лучшего решения
+                if (currentEnergy < BestEnergy){
+                    BestEnergy = currentEnergy;
+                    BestPath = state;
+                }
+                // изменение температуры происходит согласно заданой функции
+                T = DecreaseTemperature(startT, i);
+        
+                // если достигли температуры выхода, то выходим
+                if (T <= endT){
+                    break;
+                }
+            }
+            // выведем и отобразим лучший маршут
+        
+            return BestPath;
+        }</script>
+</head>
+<body>
+
+  <div id="map"></div>
+  <div id="panel">
+    <input type="button" value="Построить маршрут" id="run">
+  </div>
+
+  <script  type="text/javascript" charset="UTF-8" >
+/**
+ * Calculates and displays a car route from the Brandenburg Gate in the centre of Berlin
+ * to Friedrichstraße Railway Station.
+ *
+ * A full list of available request parameters can be found in the Routing API documentation.
+ * see:  http://developer.here.com/rest-apis/documentation/routing/topics/resource-calculate-route.html
+ *
+ * @param   {H.service.Platform} platform    A stub class to access HERE services
+ */
+function calculateRouteFromAtoB (platform, arr_points) {
+
+  
+  var router = platform.getRoutingService(),
+    routeRequestParams = {
+      mode: 'fastest;car',
+      representation: 'display',
+      routeattributes : 'waypoints,summary,shape,legs',
+      maneuverattributes: 'direction,action',
+    };
+
+    for(let i = 0; i<arr_points.length; i++){
+      routeRequestParams['waypoint' + i] = arr_points[i];
+    }
+
+    var svgMarkupRed = '<svg width="32" height="53" viewBox="0 0 32 53" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+   '<path d="M15.5 27C21.8513 27 27 22.0751 27 16C27 9.92487 21.8513 5 15.5 5C9.14874 5 4 9.92487 4 16C4 22.0751 9.14874 27 15.5 27Z" fill="white"/>' +
+   '<path d="M16 0C11.7566 0 7.68688 1.65899 4.68629 4.61201C1.68571 7.56503 0 11.5702 0 15.7464C0 24.4429 16 53 16 53C16 53 32 24.4429 32 15.7464C32 11.5702 30.3143 7.56503 27.3137 4.61201C24.3131 1.65899 20.2435 0 16 0V0ZM16 23.4275C14.5335 23.4275 13.1 22.9996 11.8806 22.1978C10.6613 21.3959 9.71097 20.2563 9.14978 18.9229C8.58858 17.5895 8.44173 16.1223 8.72782 14.7068C9.01392 13.2913 9.7201 11.9911 10.7571 10.9706C11.794 9.95006 13.1152 9.25507 14.5535 8.97351C15.9918 8.69195 17.4826 8.83646 18.8375 9.38876C20.1923 9.94106 21.3503 10.8764 22.165 12.0764C22.9798 13.2764 23.4146 14.6872 23.4146 16.1304C23.4146 18.0657 22.6335 19.9218 21.2429 21.2903C19.8524 22.6587 17.9665 23.4275 16 23.4275V23.4275Z" fill="#FF6584"/></svg>';
+
+    let x1 = arr_points[0].split(',')[0];
+    let y1 = arr_points[0].split(',')[1];
+    
+    let x2 = arr_points[arr_points.length-1].split(',')[0];
+    let y2 = arr_points[arr_points.length-1].split(',')[1];
+
+    var bearsIcon = new H.map.Icon(svgMarkupRed),
+    bearsMarker = new H.map.Marker({lat: `${x1}`, lng: `${y1}` },
+      {icon: bearsIcon});
+   map.addObject(bearsMarker);
+
+   var svgMarkupViolet = '<svg width="32" height="53" viewBox="0 0 32 53" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+   '<path d="M15.5 27C21.8513 27 27 22.0751 27 16C27 9.92487 21.8513 5 15.5 5C9.14874 5 4 9.92487 4 16C4 22.0751 9.14874 27 15.5 27Z" fill="white"/>' +
+   '<path d="M16 0C11.7566 0 7.68688 1.65899 4.68629 4.61201C1.68571 7.56503 0 11.5702 0 15.7464C0 24.4429 16 53 16 53C16 53 32 24.4429 32 15.7464C32 11.5702 30.3143 7.56503 27.3137 4.61201C24.3131 1.65899 20.2435 0 16 0V0ZM16 23.4275C14.5335 23.4275 13.1 22.9996 11.8806 22.1978C10.6613 21.3959 9.71097 20.2563 9.14978 18.9229C8.58858 17.5895 8.44173 16.1223 8.72782 14.7068C9.01392 13.2913 9.7201 11.9911 10.7571 10.9706C11.794 9.95006 13.1152 9.25507 14.5535 8.97351C15.9918 8.69195 17.4826 8.83646 18.8375 9.38876C20.1923 9.94106 21.3503 10.8764 22.165 12.0764C22.9798 13.2764 23.4146 14.6872 23.4146 16.1304C23.4146 18.0657 22.6335 19.9218 21.2429 21.2903C19.8524 22.6587 17.9665 23.4275 16 23.4275V23.4275Z" fill="#6C63FF"/></svg>';
+
+    var bearsIcon = new H.map.Icon(svgMarkupViolet),
+    bearsMarker = new H.map.Marker({lat: `${x2}`, lng: `${y2}`  },
+      {icon: bearsIcon});
+   map.addObject(bearsMarker);
+
+  router.calculateRoute(
+    routeRequestParams,
+    onSuccess,
+    onError
+  );
+}
+/**
+ * This function will be called once the Routing REST API provides a response
+ * @param  {Object} result          A JSONP object representing the calculated route
+ *
+ * see: http://developer.here.com/rest-apis/documentation/routing/topics/resource-type-calculate-route.html
+ */
+function onSuccess(result) {
+  var route = result.response.route[0];
+  console.log(route);
+  addRouteShapeToMap(route);
+  addManueversToMap(route);
+}
+
+/**
+ * This function will be called if a communication error occurs during the JSON-P request
+ * @param  {Object} error  The error message received.
+ */
+function onError(error) {
+  alert('Ooops!');
+}
+
+
+/**
+ * Boilerplate map initialization code starts below:
+ */
+
+var mapContainer = document.getElementById('map');
+
+//Step 1: initialize communication with the platform
+var platform = new H.service.Platform({
+  app_id: 'icDUzRIlkkoHxVh3ZWBc',
+  app_code: 'xzPGxFrpDl1aStROU6d7jA',
+  useHTTPS: true
+});
+var pixelRatio = window.devicePixelRatio || 1;
+var defaultLayers = platform.createDefaultLayers({
+  tileSize: pixelRatio === 1 ? 256 : 512,
+  ppi: pixelRatio === 1 ? undefined : 320
+});
+
+//Step 2: initialize a map - this map is centered over Berlin
+var map = new H.Map(mapContainer,
+  defaultLayers.normal.map,{
+  center: {lat:44.9382, lng:34.0696},
+  zoom: 10,
+  pixelRatio: pixelRatio
+});
+
+//Step 3: make the map interactive
+// MapEvents enables the event system
+// Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+// Create the default UI components
+var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+// Hold a reference to any infobubble opened
+var bubble;
+
+/**
+ * Opens/Closes a infobubble
+ * @param  {H.geo.Point} position     The location on the map.
+ * @param  {String} text              The contents of the infobubble.
+ */
+function openBubble(position, text){
+ if(!bubble){
+    bubble =  new H.ui.InfoBubble(
+      position,
+      // The FO property holds the province name.
+      {content: text});
+    ui.addBubble(bubble);
+  } else {
+    bubble.setPosition(position);
+    bubble.setContent(text);
+    bubble.open();
+  }
+}
+
+
+/**
+ * Creates a H.map.Polyline from the shape of the route and adds it to the map.
+ * @param {Object} route A route as received from the H.service.RoutingService
+ */
+function addRouteShapeToMap(route){
+  var lineString = new H.geo.LineString(),
+    routeShape = route.shape,
+    polyline;
+
+  routeShape.forEach(function(point) {
+    var parts = point.split(',');
+    lineString.pushLatLngAlt(parts[0], parts[1]);
+  });
+
+  polyline = new H.map.Polyline(lineString, {
+    style: {
+      lineWidth: 10,
+      strokeColor: 'rgba(0, 128, 255, 0.7)'
+    }
+  });
+  // Add the polyline to the map
+  map.addObject(polyline);
+  // And zoom to its bounding rectangle
+  map.setViewBounds(polyline.getBounds(), true);
+}
+
+
+/**
+ * Creates a series of H.map.Marker points from the route and adds them to the map.
+ * @param {Object} route  A route as received from the H.service.RoutingService
+ */
+function addManueversToMap(route){
+  var svgMarkup = '<svg width="18" height="18" ' +
+    'xmlns="http://www.w3.org/2000/svg">' +
+    '<circle cx="8" cy="8" r="8" ' +
+      'fill="#1b468d" stroke="white" stroke-width="1"  />' +
+    '</svg>',
+    dotIcon = new H.map.Icon(svgMarkup, {anchor: {x:8, y:8}}),
+    group = new  H.map.Group(),
+    i,
+    j;
+
+  // Add a marker for each maneuver
+  for (i = 0;  i < route.leg.length; i += 1) {
+    for (j = 0;  j < route.leg[i].maneuver.length; j += 1) {
+      // Get the next maneuver.
+      maneuver = route.leg[i].maneuver[j];
+      // Add a marker to the maneuvers group
+      var marker =  new H.map.Marker({
+        lat: maneuver.position.latitude,
+        lng: maneuver.position.longitude} ,
+        {icon: dotIcon});
+      marker.instruction = maneuver.instruction;
+      group.addObject(marker);
+    }
+  }
+
+  group.addEventListener('tap', function (evt) {
+    map.setCenter(evt.target.getPosition());
+    openBubble(
+       evt.target.getPosition(), evt.target.instruction);
+  }, false);
+
+  // Add the maneuvers group to the map
+  map.addObject(group);
+}
+
+//слушаем события нажатия на карту, и при клике ставим маркер и добавляем координаты точки в массив
+let arr_n_cor = [];
+let i = 1 ;
+function setUpClickListener(map) {
+  
+  map.addEventListener('tap', function (evt) {
+    var coord = map.screenToGeo(evt.currentPointer.viewportX,
+            evt.currentPointer.viewportY);
+
+    let x = Math.abs(coord.lat.toFixed(4));
+    let y =Math.abs(coord.lng.toFixed(4))
+    
+    let temp = [x, y, i];
+    i++;
+    arr_n_cor.push(temp);
+    var tempMarker = new H.map.Marker({lat:x, lng:y});
+    map.addObject(tempMarker)
+    console.log(arr_n_cor);
+    // alert('Clicked at ' + Math.abs(coord.lat.toFixed(4)) +
+    //     ((coord.lat > 0) ? 'N' : 'S') +
+    //     ' ' + Math.abs(coord.lng.toFixed(4)) +
+    //      ((coord.lng > 0) ? 'E' : 'W'));
+  });
+}
+
+
+
+//прослушка события кнопки, при нажатии строим 
+const bot = document.querySelector('#run');
+bot.addEventListener('click', function(){ 
+let n_arr = [];
+  let bestPath = run_an(arr_n_cor);
+  console.log(`bestPath: ${bestPath}`);
+  for (let i = 0 ; i< bestPath.length; i++){
+    for(let j =0; j<arr_n_cor.length; j++){
+        if(bestPath[i] === arr_n_cor[j][2])
+        {
+            n_arr.push(arr_n_cor[j][0] + ',' + arr_n_cor[j][1]);
+            break;
+        }
+    }
+  }
+  console.log(`n_arr: ${n_arr}`);
+//   n_arr.pop(n_arr.length-1);
+  calculateRouteFromAtoB (platform, n_arr);
+})
+// Now use the map as required...
+setUpClickListener(map);
+
+// let arr_points = [ "44.9379,34.0721",  "44.9386,34.0667" ];
+// calculateRouteFromAtoB (platform, arr_points);
+  </script>
+</body>
+</html>
