@@ -1,5 +1,15 @@
 # quest
 
+## Readme list
+
+|  Объект | Ссылка  |
+|---|---|
+| Проект|  [Ткни](/src/README.md)    |
+| Илья  |  [Ткни](/ilya/README.md)   |
+| Дима  |  [Ткни](/dima/README.md)   |
+| Андрей|  [Ткни](/andrey/README.md) |
+| Статус|  [Ткни](/STATUS.md)        |
+
 ## Задания
 
 Формат:
@@ -28,14 +38,3 @@
 
 
 **Андрей:**
-
-
-## Readme list
-
-|  Объект | Ссылка  |
-|---|---|
-| Проект|  [Ткни](/src/README.md)    |
-| Илья  |  [Ткни](/ilya/README.md)   |
-| Дима  |  [Ткни](/dima/README.md)   |
-| Андрей|  [Ткни](/andrey/README.md) |
-| Статус|  [Ткни](/STATUS.md)        |
