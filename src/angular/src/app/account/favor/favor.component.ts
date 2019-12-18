@@ -1,10 +1,7 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { ApiService, OembedService } from '../../service'
 import { Video } from 'src/app/model';
-import { forEach } from '@angular/router/src/utils/collection';
-import { Url } from 'url';
 import { DomSanitizer } from '@angular/platform-browser';
-import { THROW_IF_NOT_FOUND } from '@angular/core/src/di/injector';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { AccountService } from '../account.service';

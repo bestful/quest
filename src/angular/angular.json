@@ -24,7 +24,9 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss",
+              "src/styles/global.scss",
+              "src/styles/toastr.css"
             ],
             "scripts": []
           },
