@@ -28,7 +28,8 @@ namespace webapi.Controllers
         [HttpGet]
         public IEnumerable<Favourite> GetFavourite()
         {
-            return null;
+                        return null;
+            return _context.Favourite;
         }
 
         // GET: api/Favourite/5
