@@ -30,7 +30,6 @@ export class FavorComponent implements OnInit {
   @Input()
   uid: number;
 
-
   errorLambda: any = error => {
     if (error.status > 0) {
       this.toastr.error(error.error);
