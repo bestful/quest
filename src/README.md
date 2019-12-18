@@ -12,7 +12,7 @@
 - Markdown All in One
 - Markdown Preview Enhanced
 
-Наши хоткеи, которые открываются через ctr + shift + p -> "pkjs":
+Наши хоткеи, которые открываются через `ctr + shift + p` -> "pkjs":
 
     // Place your key bindings in this file to override the defaultsauto[]
     [
