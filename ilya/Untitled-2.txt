@@ -1,0 +1,4 @@
+game -> rename quest
+delete chat
+teamIn_user -> rename team
+rename event to assignment svyaz to team
