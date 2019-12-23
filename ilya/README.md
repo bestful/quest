@@ -2,23 +2,23 @@
 # Реляционная модель
 
 ## Таблицы основные
-
+Идея: комбинация 
 *Основные*
 - user
 - location
-- состояние
-<!-- 
+- game
 
 ## Таблицы сложные
 *Дополнительные:*
 
 (данные поля используются для функциональности)
 
-- contactFor_person
+
+<!-- - contactFor_person
 - companyFor_person
 - stockFor_productIn_location
 - recipientIn_location
-- supplierIn_location
+- supplierIn_location -->
 
 *Кешируемые:*
 (данные поля можно присобачить ко всему)
@@ -26,12 +26,25 @@
 
 ## Видовые таблицы
 
-- user (person + contact)
-- place (location + tags)
+<!-- - user (person + contact)
+- place (location + tags) -->
 
 
 ## Поля
 
+- [ ] user
+  - username
+  - password 
+  
+- [ ] location
+  - latitude (широта)
+  - longitude (долгота)
+
+- [ ] game
+  - name
+  - ???
+
+<!-- 
 - [x] person:
   - Имя
   - Пароль
@@ -62,14 +75,14 @@
 
 - [x] supplierIn_location
   - location_id
-  - company_id
+  - company_id -->
 
 
 ## Связи
 
 Поля со связями
-- person-> contactFor_person
+<!-- - person-> contactFor_person
 - location -> linkIn_System
 - product -> stockFor_productIn_location
 - location -> recipientIn_location
-- location -> supplierIn_location -->
+- location -> supplierIn_location --> -->
