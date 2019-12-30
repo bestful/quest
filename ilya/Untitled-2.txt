@@ -1,4 +1,5 @@
-game -> rename quest
-delete chat
-teamIn_user -> rename team
-rename event to assignment svyaz to team
+rename 'game' table to 'quest'
+delete 'chat' table
+rename 'teamIn_user' to 'team'
+rename 'event' to 'challenge'
+make relation 'challenge' to 'team'
