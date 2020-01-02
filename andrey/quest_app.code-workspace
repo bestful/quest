@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "QuestApp",
+			"path": "C:\\Users\\Andrew\\source\\repos\\QuestApp"
+		},
+		{
+			"name": "webapi",
+			"path": "C:\\Users\\Andrew\\source\\repos\\QuestApp\\src\\webapi"
+		},
+		{
+			"name": "angular",
+			"path": "C:\\Users\\Andrew\\source\\repos\\QuestApp\\src\\angular"
+		}
+	],
+	"settings": {}
+}
