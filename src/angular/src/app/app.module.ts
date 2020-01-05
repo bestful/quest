@@ -15,6 +15,7 @@ import {AppComponent} from './app.component';
 import {HttpClientModule, HttpClient} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { MatSliderModule } from '@angular/material/slider';
 
 
 // 3d-party modules and services
@@ -88,7 +89,8 @@ const circleProgressOptions: CircleProgressOptions = {
       showBackground: false,
       clockwise: false,
       startFromZero: false
-    })
+    }),
+    MatSliderModule
   ],
   providers: [HttpClient, ApiService, ToastrService],
   bootstrap: [AppComponent]
