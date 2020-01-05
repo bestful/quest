@@ -38,3 +38,10 @@
 
 
 **Андрей:**
+
+
+#### Usefull links:
+
+* [Debugging in VSCode](andrey/README.md#debugging)
+
+* [Implementing a Angular project with AspNet Core (running on single port)](https://dev.to/diogenespolanco/implementing-a-angular-project-with-aspnet-core-2ik)
