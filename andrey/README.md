@@ -1,4 +1,4 @@
-# quest
+# Debugging
 
 Debugging invironment is already set up.
 Assuming that you have pre installed Google Chrome.
