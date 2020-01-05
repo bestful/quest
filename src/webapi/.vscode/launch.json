@@ -26,11 +26,29 @@
                 "/Views": "${workspaceFolder}/Views"
             }
         },
+        // {
+        //     "type": "chrome",
+        //     "request": "launch",
+        //     "name": "Angular",
+        //     "url": "http://localhost:5000",
+        //     "webRoot": "${workspaceFolder}"
+        //     // "webRoot": "${workspaceFolder}/../angular"
+        // },
         {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",
-            "processId": "${command:pickProcess}"
+            "processId": "${command:pickProcess}",
+            "symbolOptions": {
+                "searchPaths": ["$(workspaceRoot)/bin/Debug/netcoreapp2.1"],
+                "searchMicrosoftSymbolServer": false
+            },
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Server/Client",
+            "configurations": [".NET Core Launch (web)", "Angular"]
         }
     ]
 }
