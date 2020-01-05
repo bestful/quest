@@ -4,9 +4,12 @@ Debugging invironment is already set up.
 Assuming that you have pre installed Google Chrome.
 If so, all you need is just install VSCode extension by link:
 https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome
-Then you are able to launch angular in debug mode.
 
-First of all launch your app like so:
+**!important** `/src` folder should be your *working directory* otherwise the paths which setup in config file `launch.json` would be broken and you would be unable to debug the app.
+
+If the above requirenments are sufisfied - you are able to launch angular in debug mode.
+
+First of all, launch your app like so:
 
 ```
 dotnet watch [-v] run
@@ -38,6 +41,8 @@ Choose proper config
 Working example:
 
 <img src="images/debug_angular_snapshop.jpg" alt="" width="1000"/>
+
+#### To debug both - choose `"Server/Client"` configuration:
 
 > Usefull links:
 >  Angular debugging tools:
