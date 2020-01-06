@@ -25,6 +25,13 @@ import {ToastrService} from 'ngx-toastr';
 import { AutofocusDirective } from './_directive/autofocus.directive';
 import {NgCircleProgressModule, CircleProgressOptions} from 'ng-circle-progress';
 import {NgxSmartModalModule} from 'ngx-smart-modal';
+import { QuestCardComponent } from './core/quest-card/quest-card.component';
+import { QuestBoardComponent } from './core/quest-board/quest-board.component';
+import { QuestResultComponent } from './core/quest-result/quest-result.component';
+import { TeamResultComponent } from './core/team-result/team-result.component';
+import { LocationCardComponent } from './core/location-card/location-card.component';
+import { PlayerBoardComponent } from './core/player-board/player-board.component';
+import { DialogWindowComponent } from './core/dialog-window/dialog-window.component';
 
 
 const circleProgressOptions: CircleProgressOptions = {
@@ -59,6 +66,13 @@ const circleProgressOptions: CircleProgressOptions = {
     FavorComponent,
     WelcomeComponent,
     AutofocusDirective,
+    QuestCardComponent,
+    QuestBoardComponent,
+    QuestResultComponent,
+    TeamResultComponent,
+    LocationCardComponent,
+    PlayerBoardComponent,
+    DialogWindowComponent,
   ],
   imports: [
     BrowserModule,

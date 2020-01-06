@@ -6,10 +6,12 @@ import { RegisterComponent } from './auth/register/register.component';
 import { CredentialComponent } from './account/credential/credential.component';
 import { FavorComponent } from './account/favor/favor.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { QuestBoardComponent } from './core/quest-board/quest-board.component';
 
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'welcome' },
+  { path: '', pathMatch: 'full', redirectTo: 'quest-board' },
+  { path: 'quest-board', component: QuestBoardComponent },
   { path: 'welcome', component: WelcomeComponent,  data: { title: 'My Calendar' }},
   // Authorization
   { path: 'login', component: LoginComponent },
